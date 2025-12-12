@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Enterprise RAG integration for Claude Code. Manage knowledge bases, upload documents, and perform intelligent Q&A retrieval directly from your IDE.",
   "license": "MIT",
-  "repository": "https://github.com/laiye-ai/bubble-rag-plugin",
-  "homepage": "https://github.com/laiye-ai/bubble-rag-plugin",
+  "repository": "https://github.com/zilogo/bubble-rag-plugin",
+  "homepage": "https://github.com/zilogo/bubble-rag-plugin",
   "keywords": [
     "rag",
     "retrieval-augmented-generation",
@@ -15,8 +15,8 @@
     "enterprise"
   ],
   "author": {
-    "name": "Laiye AI",
-    "url": "https://laiye.ai"
+    "name": "zilogo",
+    "url": "https://github.com/zilogo"
   },
   "commands": [
     "./commands/rag.md",

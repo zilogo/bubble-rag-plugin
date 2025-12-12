@@ -133,8 +133,8 @@ Wait for document processing to complete:
 
 ## Support
 
-- Repository: https://github.com/laiye-ai/bubble-rag-plugin
-- Issues: https://github.com/laiye-ai/bubble-rag-plugin/issues
+- Repository: https://github.com/zilogo/bubble-rag-plugin
+- Issues: https://github.com/zilogo/bubble-rag-plugin/issues
 ```
 
 ### Specific Command Help

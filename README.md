@@ -15,7 +15,7 @@ Enterprise RAG (Retrieval-Augmented Generation) integration for Claude Code. Man
 ### From GitHub
 
 ```bash
-claude plugins install github:laiye-ai/bubble-rag-plugin
+claude plugins install github:zilogo/bubble-rag-plugin
 ```
 
 ### From Local Directory
@@ -189,5 +189,5 @@ MIT License
 
 ## Support
 
-- Repository: https://github.com/laiye-ai/bubble-rag-plugin
-- Issues: https://github.com/laiye-ai/bubble-rag-plugin/issues
+- Repository: https://github.com/zilogo/bubble-rag-plugin
+- Issues: https://github.com/zilogo/bubble-rag-plugin/issues

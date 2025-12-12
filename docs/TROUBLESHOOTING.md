@@ -175,7 +175,7 @@
 3. **Reinstall plugin**:
    ```bash
    claude plugins uninstall bubble-rag-plugin
-   claude plugins install github:laiye-ai/bubble-rag-plugin
+   claude plugins install github:zilogo/bubble-rag-plugin
    ```
 
 #### Configuration not persisting
@@ -290,8 +290,8 @@ Check Claude Code logs for detailed error messages.
 
 ### Support
 
-- **Repository**: https://github.com/laiye-ai/bubble-rag-plugin
-- **Issues**: https://github.com/laiye-ai/bubble-rag-plugin/issues
+- **Repository**: https://github.com/zilogo/bubble-rag-plugin
+- **Issues**: https://github.com/zilogo/bubble-rag-plugin/issues
 
 ## Reset Everything
 
@@ -303,7 +303,7 @@ rm -rf ~/.bubble-rag
 
 # Reinstall plugin
 claude plugins uninstall bubble-rag-plugin
-claude plugins install github:laiye-ai/bubble-rag-plugin
+claude plugins install github:zilogo/bubble-rag-plugin
 
 # Reconfigure
 /rag-config login --server http://your-server:8000

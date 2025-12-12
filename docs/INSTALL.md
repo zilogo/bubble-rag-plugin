@@ -32,7 +32,7 @@ sudo yum install curl jq
 ### Method 1: From GitHub (Recommended)
 
 ```bash
-claude plugins install github:laiye-ai/bubble-rag-plugin
+claude plugins install github:zilogo/bubble-rag-plugin
 ```
 
 ### Method 2: From Local Directory
@@ -49,7 +49,7 @@ For development or testing:
 
 ```bash
 # Clone the repository
-git clone https://github.com/laiye-ai/bubble-rag-plugin.git
+git clone https://github.com/zilogo/bubble-rag-plugin.git
 cd bubble-rag-plugin
 
 # Install locally

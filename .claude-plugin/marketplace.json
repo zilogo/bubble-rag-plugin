@@ -1,24 +1,24 @@
 {
   "name": "bubble-rag",
   "owner": {
-    "name": "Laiye AI",
-    "url": "https://github.com/laiye-ai"
+    "name": "zilogo",
+    "url": "https://github.com/zilogo"
   },
   "plugins": [
     {
       "name": "bubble-rag-plugin",
       "source": {
         "source": "github",
-        "repo": "laiye-ai/bubble-rag-plugin"
+        "repo": "zilogo/bubble-rag-plugin"
       },
       "version": "1.0.0",
       "description": "Enterprise RAG integration for Claude Code with knowledge base management, document upload, and intelligent Q&A retrieval.",
       "author": {
-        "name": "Laiye AI",
-        "url": "https://github.com/laiye-ai"
+        "name": "zilogo",
+        "url": "https://github.com/zilogo"
       },
       "license": "MIT",
-      "repository": "https://github.com/laiye-ai/bubble-rag-plugin",
+      "repository": "https://github.com/zilogo/bubble-rag-plugin",
       "keywords": [
         "rag",
         "knowledge-base",
