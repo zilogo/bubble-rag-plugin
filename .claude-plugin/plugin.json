@@ -1,0 +1,36 @@
+{
+  "name": "bubble-rag-plugin",
+  "version": "1.0.0",
+  "description": "Enterprise RAG integration for Claude Code. Manage knowledge bases, upload documents, and perform intelligent Q&A retrieval directly from your IDE.",
+  "license": "MIT",
+  "repository": "https://github.com/laiye-ai/bubble-rag-plugin",
+  "homepage": "https://github.com/laiye-ai/bubble-rag-plugin",
+  "keywords": [
+    "rag",
+    "retrieval-augmented-generation",
+    "knowledge-base",
+    "document-management",
+    "semantic-search",
+    "bubble-rag",
+    "enterprise"
+  ],
+  "author": {
+    "name": "Laiye AI",
+    "url": "https://laiye.ai"
+  },
+  "commands": [
+    "./commands/rag.md",
+    "./commands/rag-kb.md",
+    "./commands/rag-doc.md",
+    "./commands/rag-config.md",
+    "./commands/rag-status.md",
+    "./commands/rag-help.md"
+  ],
+  "agents": [
+    "./agents/rag-assistant.md"
+  ],
+  "skills": [
+    "./skills/bubble-rag-orchestrator/"
+  ],
+  "hooks": "./hooks/hooks.json"
+}

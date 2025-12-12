@@ -1,0 +1,47 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Local configuration (don't commit user-specific config)
+.env
+.env.local
+*.local
+
+# Test files
+test-*.txt
+test-*.pdf
+test-*.docx
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+dist/
+build/
+
+# Node modules (if any JS tools used)
+node_modules/
+
+# Python virtual environments (if any Python tools used)
+venv/
+.venv/
+__pycache__/
+*.pyc
