@@ -8,11 +8,12 @@
   - [4.1 用户登录/注册](#41-用户登录注册)
   - [4.2 创建知识库](#42-创建知识库)
   - [4.3 查询知识库列表](#43-查询知识库列表)
-  - [4.4 删除知识库](#44-删除知识库)
-  - [4.5 添加文档任务](#45-添加文档任务)
-  - [4.6 查询文档任务列表](#46-查询文档任务列表)
-  - [4.7 删除文档任务](#47-删除文档任务)
-  - [4.8 聊天检索](#48-聊天检索)
+  - [4.4 更新知识库](#44-更新知识库)
+  - [4.5 删除知识库](#45-删除知识库)
+  - [4.6 添加文档任务](#46-添加文档任务)
+  - [4.7 查询文档任务列表](#47-查询文档任务列表)
+  - [4.8 删除文档任务](#48-删除文档任务)
+  - [4.9 聊天检索](#49-聊天检索)
 - [5. 完整使用示例](#5-完整使用示例)
 - [6. 错误处理](#6-错误处理)
 - [7. 常见问题](#7-常见问题)
@@ -287,7 +288,106 @@ curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/knowledge_base/list_kno
 
 ---
 
-### 4.4 删除知识库
+### 4.4 更新知识库
+
+更新知识库的名称、描述或模型配置。
+
+#### 接口信息
+- **URL**: `/bubble_rag/api/v1/knowledge_base/update_knowledge_base`
+- **方法**: `POST`
+- **Content-Type**: `application/json`
+- **需要认证**: 是
+
+#### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| kb_id | String | 是 | 知识库ID（**注意：参数名是 kb_id 不是 id**） |
+| kb_name | String | 否 | 新的知识库名称 |
+| kb_desc | String | 否 | 新的知识库描述 |
+| rerank_model_id | String | 否 | Rerank模型ID |
+| embedding_model_id | String | 否 | Embedding模型ID |
+
+#### 请求示例
+
+**只更新名称：**
+```json
+{
+  "kb_id": "155878243264626698",
+  "kb_name": "新的知识库名称"
+}
+```
+
+**更新名称和描述：**
+```json
+{
+  "kb_id": "155878243264626698",
+  "kb_name": "产品文档知识库",
+  "kb_desc": "包含所有产品相关文档"
+}
+```
+
+**完整更新（包含模型）：**
+```json
+{
+  "kb_id": "155878243264626698",
+  "kb_name": "技术文档库",
+  "kb_desc": "技术支持文档",
+  "rerank_model_id": "154605956896915473",
+  "embedding_model_id": "154605669335433233"
+}
+```
+
+#### 响应示例
+
+```json
+{
+  "msg": "知识库更新成功",
+  "code": 200,
+  "data": {
+    "id": "155878243264626698",
+    "kb_name": "新的知识库名称",
+    "kb_desc": "新的描述信息",
+    "rerank_model_id": "154605956896915473",
+    "embedding_model_id": "154605669335433233",
+    "vector_id": "155878243264692234",
+    "coll_name": "nJxLJsqqjCvvAXxQ",
+    "create_time": "2025-12-11T16:31:13",
+    "update_time": "2026-01-24T18:05:23"
+  }
+}
+```
+
+#### cURL 示例
+
+```bash
+curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/knowledge_base/update_knowledge_base' \
+  -H 'Authorization: Bearer <your_token>' \
+  -H 'x-token: <your_token>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "kb_id": "155878243264626698",
+    "kb_name": "新的知识库名称",
+    "kb_desc": "新的描述信息"
+  }'
+```
+
+#### 重要提示
+
+1. **参数名称**：必须使用 `kb_id`，不能使用 `id`
+2. **部分更新**：只传需要更新的字段即可，不需要传所有字段
+3. **模型ID**：如果不更改模型配置，可以不传模型ID参数
+
+#### 常见错误
+
+| 错误信息 | 原因 | 解决方案 |
+|----------|------|----------|
+| `知识库ID不能为空` | 参数名使用了 `id` 而不是 `kb_id` | 改为 `kb_id` |
+| `知识库不存在` | kb_id 无效或不存在 | 检查知识库ID是否正确 |
+
+---
+
+### 4.5 删除知识库
 
 删除指定的知识库及其所有文档数据。
 
@@ -342,7 +442,7 @@ curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/knowledge_base/delete_k
 
 ---
 
-### 4.5 添加文档任务
+### 4.6 添加文档任务
 
 上传文档到知识库并启动解析任务。
 
@@ -421,7 +521,7 @@ curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/documents/add_doc_task'
 
 ---
 
-### 4.6 查询文档任务列表
+### 4.7 查询文档任务列表
 
 查询知识库中文档任务的处理状态。
 
@@ -508,7 +608,7 @@ curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/documents/list_doc_task
 
 ---
 
-### 4.7 删除文档任务
+### 4.8 删除文档任务
 
 删除知识库中的文档任务及其关联的向量数据。
 
@@ -576,7 +676,7 @@ curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/documents/delete_doc_ta
 
 ---
 
-### 4.8 聊天检索
+### 4.9 聊天检索
 
 基于知识库进行智能问答检索。
 
@@ -742,6 +842,38 @@ class BubbleRAGClient:
         payload = {"kb_name": "", "page_num": page_num, "page_size": page_size}
         response = requests.post(url, json=payload, headers=self._get_headers())
         return response.json()
+
+    def update_knowledge_base(self, kb_id, kb_name=None, kb_desc=None,
+                             rerank_model_id=None, embedding_model_id=None):
+        """更新知识库
+
+        Args:
+            kb_id: 知识库ID
+            kb_name: 新的知识库名称（可选）
+            kb_desc: 新的描述（可选）
+            rerank_model_id: Rerank模型ID（可选）
+            embedding_model_id: Embedding模型ID（可选）
+        """
+        url = f"{self.base_url}{self.api_prefix}/knowledge_base/update_knowledge_base"
+        payload = {"kb_id": kb_id}
+
+        # 只添加非空参数
+        if kb_name is not None:
+            payload["kb_name"] = kb_name
+        if kb_desc is not None:
+            payload["kb_desc"] = kb_desc
+        if rerank_model_id is not None:
+            payload["rerank_model_id"] = rerank_model_id
+        if embedding_model_id is not None:
+            payload["embedding_model_id"] = embedding_model_id
+
+        response = requests.post(url, json=payload, headers=self._get_headers())
+        result = response.json()
+        if result.get("code") == 200:
+            print(f"知识库更新成功: {kb_id}")
+            return result["data"]
+        print(f"更新失败: {result.get('msg')}")
+        return None
 
     def delete_knowledge_base(self, kb_id):
         """删除知识库"""
@@ -1043,7 +1175,7 @@ echo -e "\n=== 测试完成 ==="
 
 ---
 
-**文档版本**: v2.1
+**文档版本**: v2.2
 **最后更新**: 2026-01-24
 **适用环境**: `http://172.16.13.88:8000`
 
@@ -1051,5 +1183,6 @@ echo -e "\n=== 测试完成 ==="
 
 | 版本 | 日期 | 更新内容 |
 |------|------|----------|
-| v2.1 | 2026-01-24 | 新增 4.7 删除文档任务接口；更新 Python SDK 示例；新增完整流程测试脚本 |
+| v2.2 | 2026-01-24 | 新增 4.4 更新知识库接口；更新 Python SDK 添加 update_knowledge_base() 方法；完善文档任务管理说明 |
+| v2.1 | 2026-01-24 | 新增 4.8 删除文档任务接口；更新 Python SDK 示例；新增完整流程测试脚本 |
 | v2.0 | 2025-12-12 | 初始版本 |
