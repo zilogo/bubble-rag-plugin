@@ -11,7 +11,8 @@
   - [4.4 删除知识库](#44-删除知识库)
   - [4.5 添加文档任务](#45-添加文档任务)
   - [4.6 查询文档任务列表](#46-查询文档任务列表)
-  - [4.7 聊天检索](#47-聊天检索)
+  - [4.7 删除文档任务](#47-删除文档任务)
+  - [4.8 聊天检索](#48-聊天检索)
 - [5. 完整使用示例](#5-完整使用示例)
 - [6. 错误处理](#6-错误处理)
 - [7. 常见问题](#7-常见问题)
@@ -507,7 +508,75 @@ curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/documents/list_doc_task
 
 ---
 
-### 4.7 聊天检索
+### 4.7 删除文档任务
+
+删除知识库中的文档任务及其关联的向量数据。
+
+#### 接口信息
+- **URL**: `/bubble_rag/api/v1/documents/delete_doc_task`
+- **方法**: `POST`
+- **Content-Type**: `application/json`
+- **需要认证**: 是
+
+#### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| task_ids | Array[String] | 是 | 要删除的任务ID列表（**注意：必须是数组格式**） |
+| doc_knowledge_base_id | String | 是 | 知识库ID |
+
+#### 请求示例
+
+```json
+{
+  "task_ids": ["162238344535736330"],
+  "doc_knowledge_base_id": "162238319369912330"
+}
+```
+
+#### 响应示例
+
+```json
+{
+  "msg": "success",
+  "code": 200,
+  "data": null
+}
+```
+
+#### cURL 示例
+
+```bash
+curl -X POST 'http://172.16.13.88:8000/bubble_rag/api/v1/documents/delete_doc_task' \
+  -H 'Authorization: Bearer <your_token>' \
+  -H 'x-token: <your_token>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "task_ids": ["162238344535736330"],
+    "doc_knowledge_base_id": "162238319369912330"
+  }'
+```
+
+#### 重要提示
+
+1. **参数格式**：`task_ids` 必须是数组格式，即使只删除一个任务也要使用 `["task_id"]`
+2. **任务ID获取**：任务ID可从上传文档响应或查询任务列表中获取（`id` 字段）
+3. **删除不可恢复**：删除操作会同时删除：
+   - 文档任务记录
+   - 文档解析内容
+   - 关联的向量数据
+
+#### 常见错误
+
+| 错误信息 | 原因 | 解决方案 |
+|----------|------|----------|
+| `task_ids不能为空` | 未提供 task_ids 或格式错误 | 确保使用数组格式 `["id"]` |
+| `知识库不存在` | doc_knowledge_base_id 无效 | 检查知识库ID是否正确 |
+| `文档片段不存在` | 使用了错误的端点或参数名 | 使用 `/delete_doc_task` 端点和 `task_ids` 参数 |
+
+---
+
+### 4.8 聊天检索
 
 基于知识库进行智能问答检索。
 
@@ -735,6 +804,29 @@ class BubbleRAGClient:
         print("等待超时")
         return False
 
+    def delete_doc_task(self, kb_id, task_ids):
+        """删除文档任务
+
+        Args:
+            kb_id: 知识库ID
+            task_ids: 任务ID列表（单个ID也需要用列表包装）
+        """
+        url = f"{self.base_url}{self.api_prefix}/documents/delete_doc_task"
+        # 确保 task_ids 是列表格式
+        if isinstance(task_ids, str):
+            task_ids = [task_ids]
+        payload = {
+            "task_ids": task_ids,
+            "doc_knowledge_base_id": kb_id
+        }
+        response = requests.post(url, json=payload, headers=self._get_headers())
+        result = response.json()
+        if result.get("code") == 200:
+            print(f"文档任务删除成功: {task_ids}")
+            return True
+        print(f"删除失败: {result.get('msg')}")
+        return False
+
     def chat(self, kb_id, question, limit_result=5):
         """聊天检索"""
         url = f"{self.base_url}{self.api_prefix}/chat/completions"
@@ -769,7 +861,7 @@ if __name__ == "__main__":
 
     if kb_id:
         # 3. 上传文档
-        client.upload_document(kb_id, "/path/to/document.txt")
+        task_id = client.upload_document(kb_id, "/path/to/document.txt")
 
         # 4. 等待处理完成
         if client.wait_for_completion(kb_id):
@@ -777,7 +869,10 @@ if __name__ == "__main__":
             answer = client.chat(kb_id, "文档的主要内容是什么？")
             print(f"\n回答: {answer}")
 
-        # 6. 清理（可选）
+        # 6. 删除文档任务（可选）
+        # client.delete_doc_task(kb_id, task_id)
+
+        # 7. 删除知识库（可选）
         # client.delete_knowledge_base(kb_id)
 ```
 
@@ -859,18 +954,20 @@ if __name__ == "__main__":
 # test_api.sh - 快速测试API连通性
 
 BASE_URL="http://172.16.13.88:8000"
+API_PREFIX="/bubble_rag/api/v1"
 
 echo "=== 测试登录 ==="
-TOKEN=$(curl -s -X POST "${BASE_URL}/bubble_rag/api/v1/auth/login_or_create" \
+LOGIN_RESULT=$(curl -s -X POST "${BASE_URL}${API_PREFIX}/auth/login_or_create" \
   -H "Content-Type: application/json" \
-  -d '{"username": "test_user", "user_password": "laiye123"}' | \
-  grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+  -d '{"username": "test_user", "user_password": "laiye123"}')
+
+TOKEN=$(echo "$LOGIN_RESULT" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
 
 if [ -n "$TOKEN" ]; then
     echo "登录成功，Token: ${TOKEN:0:50}..."
 
     echo -e "\n=== 测试查询知识库 ==="
-    curl -s -X POST "${BASE_URL}/bubble_rag/api/v1/knowledge_base/list_knowledge_base" \
+    curl -s -X POST "${BASE_URL}${API_PREFIX}/knowledge_base/list_knowledge_base" \
       -H "Authorization: Bearer $TOKEN" \
       -H "x-token: $TOKEN" \
       -H "Content-Type: application/json" \
@@ -880,8 +977,79 @@ else
 fi
 ```
 
+### 完整流程测试脚本
+
+```bash
+#!/bin/bash
+# test_full_flow.sh - 完整API流程测试（创建、上传、查询、删除）
+
+BASE_URL="http://172.16.13.88:8000"
+API_PREFIX="/bubble_rag/api/v1"
+
+# 1. 登录
+echo "=== 步骤1: 登录 ==="
+LOGIN_RESULT=$(curl -s -X POST "${BASE_URL}${API_PREFIX}/auth/login_or_create" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "api_test", "user_password": "laiye123"}')
+TOKEN=$(echo "$LOGIN_RESULT" | jq -r '.data.token')
+echo "登录成功"
+
+# 2. 创建知识库
+echo -e "\n=== 步骤2: 创建知识库 ==="
+KB_RESULT=$(curl -s -X POST "${BASE_URL}${API_PREFIX}/knowledge_base/add_knowledge_base" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "x-token: $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"kb_name": "API_Test_KB", "rerank_model_id": "154605956896915473", "embedding_model_id": "154605669335433233", "kb_desc": "API测试"}')
+KB_ID=$(echo "$KB_RESULT" | jq -r '.data.id')
+echo "知识库创建成功: $KB_ID"
+
+# 3. 创建并上传测试文件
+echo -e "\n=== 步骤3: 上传文档 ==="
+echo "这是一个测试文档，用于验证API功能。" > /tmp/test_doc.txt
+UPLOAD_RESULT=$(curl -s -X POST "${BASE_URL}${API_PREFIX}/documents/add_doc_task" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "x-token: $TOKEN" \
+  -F "files=@/tmp/test_doc.txt" \
+  -F "doc_knowledge_base_id=$KB_ID" \
+  -F "chunk_size=500")
+TASK_ID=$(echo "$UPLOAD_RESULT" | jq -r '.data[0].id')
+echo "文档上传成功，任务ID: $TASK_ID"
+
+# 4. 等待处理完成
+echo -e "\n=== 步骤4: 等待处理 ==="
+sleep 10
+echo "处理完成"
+
+# 5. 删除文档任务
+echo -e "\n=== 步骤5: 删除文档任务 ==="
+DELETE_RESULT=$(curl -s -X POST "${BASE_URL}${API_PREFIX}/documents/delete_doc_task" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "x-token: $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"task_ids\": [\"$TASK_ID\"], \"doc_knowledge_base_id\": \"$KB_ID\"}")
+echo "$DELETE_RESULT" | jq .
+
+# 6. 删除知识库
+echo -e "\n=== 步骤6: 删除知识库 ==="
+curl -s -X POST "${BASE_URL}${API_PREFIX}/knowledge_base/delete_knowledge_base" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "x-token: $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"kb_id\": \"$KB_ID\"}" | jq .
+
+echo -e "\n=== 测试完成 ==="
+```
+
 ---
 
-**文档版本**: v2.0
-**最后更新**: 2025-12-12
+**文档版本**: v2.1
+**最后更新**: 2026-01-24
 **适用环境**: `http://172.16.13.88:8000`
+
+### 更新日志
+
+| 版本 | 日期 | 更新内容 |
+|------|------|----------|
+| v2.1 | 2026-01-24 | 新增 4.7 删除文档任务接口；更新 Python SDK 示例；新增完整流程测试脚本 |
+| v2.0 | 2025-12-12 | 初始版本 |
